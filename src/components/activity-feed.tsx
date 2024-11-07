@@ -73,7 +73,7 @@ export async function ActivityFeed({ posts }: Props) {
                     return (
                       <Card
                         key={id}
-                        className='p-3 bg-gray-50 mb-3 last:mb-0 shadow-none'
+                        className='p-3 bg-gray-50 border-gray-200 mb-3 last:mb-0 shadow-none'
                       >
                         <div className='flex items-center mb-1'>
                           <img
