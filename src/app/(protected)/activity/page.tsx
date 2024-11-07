@@ -3,6 +3,8 @@ import { StepsActivityCard } from '@/components/wellness/steps/activity-card'
 import { SunlightActivityCard } from '@/components/wellness/sunlight/activity-card'
 import { WaterActivityCard } from '@/components/wellness/water/activity-card'
 import { ThoughtActivityCard } from '@/components/wellness/thought-activity-card'
+import { ActivityFeed } from '@/components/activity-feed'
+import { fetchPosts } from '@/actions/wellness'
 
 interface Props {
   searchParams: Promise<{ activity: string }>
@@ -10,6 +12,7 @@ interface Props {
 
 export default async function ActivityPage({ searchParams }: Props) {
   const { activity } = await searchParams
+  const { posts } = await fetchPosts()
 
   function ActivityCard() {
     switch (activity) {
@@ -27,7 +30,7 @@ export default async function ActivityPage({ searchParams }: Props) {
   }
 
   return (
-    <div className='min-h-dvh p-5'>
+    <div className='min-h-dvh p-5 pb-20'>
       <header>
         <div className='w-full flex item-center justify-between'>
           <h1 className='font-extrabold text-3xl'>Activity</h1>
@@ -41,6 +44,8 @@ export default async function ActivityPage({ searchParams }: Props) {
         <div className='mt-3'>
           <ActivityCard />
         </div>
+
+        <ActivityFeed posts={posts} />
       </main>
     </div>
   )
