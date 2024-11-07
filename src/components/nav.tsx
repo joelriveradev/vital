@@ -11,7 +11,7 @@ export function Nav() {
   const currentPath = usePathname()
 
   return (
-    <nav className='fixed w-full max-w-md left-1/2 -translate-x-1/2 flex items-center justify-between gap-x-3 bottom-0 p-5 py-0 border-t bg-white dark:bg-black backdrop-blur-md'>
+    <nav className='fixed w-full max-w-md left-1/2 -translate-x-1/2 flex items-center justify-between gap-x-3 bottom-0 p-5 py-0 border-t bg-white/50 dark:bg-black backdrop-blur-md'>
       {routes.map(({ path, label, icon: Icon }) => {
         return (
           <Link href={path} prefetch key={path} className=''>
