@@ -1,5 +1,5 @@
 import { StepsTile } from './steps/tile'
-import { SleepTile } from './sleep-tile'
+import { SleepTile } from './sleep/tile'
 import { SunshineTile } from './sunlight/tile'
 import { WaterTile } from './water/tile'
 

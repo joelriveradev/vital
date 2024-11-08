@@ -1,28 +1,33 @@
 'use client'
 
-import { startTransition, useState } from 'react'
+import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { PostLengthIndicator } from '../post-length-indicator'
+import { PostLengthIndicator } from '@/components/post-length-indicator'
 import { saveThought } from '@/actions/wellness'
+import { Loader } from 'lucide-react'
 
 export function ThoughtActivityCard() {
   const [thought, setThought] = useState<string>('')
+  const [isPending, startTransition] = useTransition()
 
   const MAX_LENGTH = 280
 
   const handleThoughtChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    startTransition(() => setThought(e.target.value))
-  }
-
-  function resetThought() {
-    startTransition(() => setThought(''))
+    setThought(e.target.value)
   }
 
   return (
     <Card className='p-3'>
-      <form action={saveThought}>
+      <form
+        action={async (data: FormData) => {
+          startTransition(() => {
+            saveThought(data)
+            setThought('')
+          })
+        }}
+      >
         <Textarea
           placeholder="What's on your mind?"
           className='p-0 border-none shadow-none text-base focus-visible:ring-0'
@@ -37,11 +42,10 @@ export function ThoughtActivityCard() {
 
           <Button
             size='sm'
-            disabled={!thought || thought.length > MAX_LENGTH}
+            disabled={!thought || thought.length > MAX_LENGTH || isPending}
             type='submit'
-            onClick={resetThought}
           >
-            Post
+            {isPending ? <Loader className='w-5 h-5' /> : 'Post'}
           </Button>
         </div>
       </form>
