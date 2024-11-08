@@ -7,7 +7,7 @@ export function SleepTile() {
       <header className='mb-10'>
         <Link
           href='/sleep'
-          className='flex items-center font-extrabold text-purple-600 text-xl'
+          className='flex items-center font-extrabold text-indigo-600 text-xl'
           prefetch
         >
           Sleep <ChevronRight className='ml-1' size={20} />
