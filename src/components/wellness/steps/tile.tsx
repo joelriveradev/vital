@@ -1,11 +1,12 @@
 import { ChevronRight } from 'lucide-react'
-import { fetchSteps } from '@/actions/wellness'
+import { fetchStepsActivity } from '@/actions/wellness'
 import { formatNumber } from '@/lib/utils'
 
 import Link from 'next/link'
 
 export async function StepsTile() {
-  const { count } = await fetchSteps()
+  const data = await fetchStepsActivity()
+  const steps = 'count' in data ? data.count : 0
 
   return (
     <div className='bg-[#FCFCFC] border border-[#D9D9D9] rounded-2xl p-5'>
@@ -22,7 +23,7 @@ export async function StepsTile() {
       <div className='flex flex-col'>
         <span className='uppercase text-neutral-500 text-xs'>today</span>
         <output className='font-extrabold text-3xl'>
-          {formatNumber(count)}
+          {formatNumber(steps)}
         </output>
       </div>
     </div>

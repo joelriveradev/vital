@@ -21,8 +21,14 @@ export function SunlightActivityCard() {
 
   useEffect(() => {
     startTransition(async () => {
-      const { minutes, goal } = await fetchSunlightActivity()
-      setState({ minutes, goal })
+      const data = await fetchSunlightActivity()
+
+      if ('error' in data) {
+        console.error(data.error)
+      }
+      if ('minutes' in data) {
+        setState({ ...data })
+      }
     })
   }, [])
 

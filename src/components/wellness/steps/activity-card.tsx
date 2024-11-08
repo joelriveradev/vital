@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ProgressSkeleton } from '@/components/wellness/progress/skeleton'
-import { fetchSteps, saveStepsActivity } from '@/actions/wellness'
+import { fetchStepsActivity, saveStepsActivity } from '@/actions/wellness'
 import { Show } from '@/components/show'
 import { cn } from '@/lib/utils'
 import { ProgressBar } from '@/components/wellness/progress/bar'
@@ -27,10 +27,14 @@ export function StepsActivityCard() {
 
   useEffect(() => {
     startTransition(async () => {
-      const { count } = await fetchSteps()
-      setState({ ...state, count })
+      const data = await fetchStepsActivity()
 
-      if (!fetched) {
+      if ('error' in data) {
+        console.error(data.error)
+      }
+
+      if (!fetched && 'count' in data) {
+        setState({ ...data })
         setFetched(true)
       }
     })

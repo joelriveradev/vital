@@ -31,7 +31,7 @@ export function ProgressBar({ type, current, goal }: Props) {
         </div>
       </div>
 
-      <div className='w-full bg-neutral-100 rounded-full h-2.5 my-5 mt-3.5'>
+      <div className='w-full bg-gray-100 rounded-full h-2.5 my-5 mt-3.5'>
         <div
           className={cn('h-2.5 rounded-full transition-all bg-gradient-to-r', {
             'from-cyan-400 to-cyan-200': type === 'water',

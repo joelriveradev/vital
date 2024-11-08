@@ -9,115 +9,136 @@ export async function revalidate(path: string) {
   revalidatePath(path)
 }
 
-export async function fetchWaterActivity() {
+export async function fetchWaterActivity(): Promise<
+  { ounces: number; goal: number } | { error: string }
+> {
   const supabase = createClient(cookies())
-  const today = new Date().toISOString().split('T')[0]
+  const startOfDay = new Date()
+  const endOfDay = new Date()
+
+  startOfDay.setHours(0, 0, 0, 0)
+  endOfDay.setHours(23, 59, 59, 999)
 
   const {
     data: { user }
   } = await supabase.auth.getUser()
 
-  if (user) {
-    const { data, error } = await supabase
-      .from('water')
-      .select('ounces')
-      .eq('user_id', user.id)
-      .eq('date', today)
-
-    if (error) {
-      console.error(error.message)
-    }
-    if (data) {
-      return {
-        ounces: data.reduce((acc, curr) => acc + curr.ounces, 0),
-        goal: 130
-      }
-    }
+  if (!user) {
+    return { error: 'User not found' }
   }
+
+  const { data, error } = await supabase
+    .from('water')
+    .select('ounces')
+    .eq('user_id', user.id)
+    .gte('date', startOfDay.toISOString())
+    .lt('date', endOfDay.toISOString())
+
+  if (error) {
+    console.error(error.message)
+  }
+
   return {
-    ounces: 0,
+    ounces: data?.reduce((acc, curr) => acc + curr.ounces, 0) ?? 0,
     goal: 130
   }
 }
 
-export async function fetchSunlightActivity() {
+export async function fetchSunlightActivity(): Promise<
+  { minutes: number; goal: number } | { error: string }
+> {
   const supabase = createClient(cookies())
-  const today = new Date().toISOString().split('T')[0]
+  const startOfDay = new Date()
+  const endOfDay = new Date()
+
+  startOfDay.setHours(0, 0, 0, 0)
+  endOfDay.setHours(23, 59, 59, 999)
 
   const {
     data: { user }
   } = await supabase.auth.getUser()
 
-  if (user) {
-    const { data, error } = await supabase
-      .from('sunlight')
-      .select('minutes')
-      .eq('user_id', user.id)
-      .eq('date', today)
+  if (!user)
+    return {
+      error: 'User not found'
+    }
 
-    if (error) {
-      console.error(error.message)
-    }
-    if (data) {
-      return {
-        minutes: data.reduce((acc, curr) => acc + curr.minutes, 0),
-        goal: 30
-      }
-    }
+  const { data, error } = await supabase
+    .from('sunlight')
+    .select('minutes')
+    .eq('user_id', user.id)
+    .gte('date', startOfDay.toISOString())
+    .lt('date', endOfDay.toISOString())
+
+  if (error) {
+    console.error(error.message)
   }
+
   return {
-    minutes: 0,
+    minutes: data?.reduce((acc, curr) => acc + curr.minutes, 0) ?? 0,
     goal: 30
   }
 }
 
-export async function fetchSteps() {
+export async function fetchStepsActivity(): Promise<
+  { count: number; goal: number } | { error: string }
+> {
   const supabase = createClient(cookies())
-  const today = new Date().toISOString().split('T')[0]
+  const startOfDay = new Date()
+  const endOfDay = new Date()
+
+  startOfDay.setHours(0, 0, 0, 0)
+  endOfDay.setHours(23, 59, 59, 999)
 
   const {
     data: { user }
   } = await supabase.auth.getUser()
 
-  if (user) {
-    const { data, error } = await supabase
-      .from('steps')
-      .select('count')
-      .eq('user_id', user.id)
-      .eq('date', today)
-
-    if (error) {
-      console.error(error.message)
-    }
-    if (data) {
-      return {
-        count: data.reduce((acc, curr) => acc + curr.count, 0),
-        goal: 10000
-      }
+  if (!user) {
+    return {
+      error: 'User not found'
     }
   }
+
+  const { data, error } = await supabase
+    .from('steps')
+    .select('count')
+    .eq('user_id', user.id)
+    .gte('date', startOfDay.toISOString())
+    .lte('date', endOfDay.toISOString())
+
+  if (error) {
+    console.error(error.message)
+  }
+
   return {
-    count: 0,
+    count: data?.reduce((acc, curr) => acc + curr.count, 0) ?? 0,
     goal: 10000
   }
 }
 
 export async function saveStepsActivity(data: FormData) {
-  const client = createClient(cookies())
+  const supabase = createClient(cookies())
   const steps = data.get('steps') as string
+  const today = new Date()
 
-  try {
-    await client.from('steps').insert({
-      count: Number(steps),
-      date: new Date().toISOString()
-    })
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message)
-    }
-  } finally {
-    await revalidate('/activity')
+  const {
+    data: { user }
+  } = await supabase.auth.getUser()
+
+  if (!user) return
+
+  const { error } = await supabase.from('steps').insert({
+    user_id: user.id,
+    count: Number(steps),
+    date: today.toISOString()
+  })
+
+  if (error) {
+    console.error(error.message)
   }
+
+  await revalidate('/activity')
 }
 
 export async function saveThought(data: FormData) {
